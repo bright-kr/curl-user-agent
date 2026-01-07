@@ -1,8 +1,8 @@
-# How to Set up And Change User Agent with cURL
+# cURL에서 User Agent 설정 및 변경 방법
 
-[![Bright Data Promo](https://github.com/luminati-io/LinkedIn-Scraper/raw/main/Proxies%20and%20scrapers%20GitHub%20bonus%20banner.png)](https://brightdata.com/)
+[![Bright Data Promo](https://github.com/luminati-io/LinkedIn-Scraper/raw/main/Proxies%20and%20scrapers%20GitHub%20bonus%20banner.png)](https://brightdata.co.kr/)
 
-This guide walks you through the process of configuring and modifying the User-Agent header in cURL to improve your web scraping efforts:
+이 가이드는 Webスクレイピング 작업을 개선하기 위해 cURL에서 User-Agent 헤더를 구성하고 수정하는 과정을 안내합니다:
 
 - [User Agents and Their Significance](#user-agents-and-their-significance)
 - [The Standard cURL User Agent](#the-standard-curl-user-agent)
@@ -16,36 +16,36 @@ This guide walks you through the process of configuring and modifying the User-A
 
 ## User Agents and Their Significance
 
-A user agent represents a text string that web browsers, request-making applications, and HTTP clients include in the [User-Agent](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent) HTTP header to reveal the source software of the request. This identifier typically contains details about the browser/application type, operating system, and additional specifications.
+User agent는 웹 브라우저, リクエスト를 생성하는 애플리케이션, HTTP 클라이언트가 リクエスト의 소스 소프트웨어를 공개하기 위해 [User-Agent](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent) HTTP 헤더에 포함하는 텍스트 문자열을 의미합니다. 이 식별자에는 일반적으로 브라우저/애플리케이션 유형, 운영체제, 그리고 추가 사양에 대한 정보가 포함됩니다.
 
-Here's an example of a typical user agent string from a Chrome browser:
+다음은 Chrome 브라우저의 일반적인 user agent 문자열 예시입니다:
 
 ```
 Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 ```
 
-This header information plays a crucial role in determining if requests originate from legitimate browsers or other software tools. Automated scraping tools often utilize inconsistent or generic user agent strings, revealing their automated nature. Therefore, the user agent header assists anti-bot technologies in distinguishing between genuine users and automated scripts.
+이 헤더 정보는 リクエスト가 정상적인 브라우저에서 발생했는지, 혹은 다른 소프트웨어 도구에서 발생했는지를 판단하는 데 중요한 역할을 합니다. 자동화된 スクレイピング 도구는 종종 일관성이 없거나 범용적인 user agent 문자열을 사용하여 자동화된 성격을 드러냅니다. 따라서 user agent 헤더는 アンチボット 기술이 실제 사용자와 자동화 스크립트를 구분하는 데 도움을 줍니다.
 
 ## The Standard cURL User Agent
 
-Similar to most HTTP clients, [cURL](https://brightdata.com/blog/web-data/what-is-curl) automatically includes a User-Agent header when sending HTTP requests. The default cURL user agent follows this format:
+대부분의 HTTP 클라이언트와 마찬가지로 [cURL](https://brightdata.co.kr/blog/web-data/what-is-curl)은 HTTP リクエスト를 전송할 때 User-Agent 헤더를 자동으로 포함합니다. 기본 cURL user agent는 다음 형식을 따릅니다:
 
 ```
 curl/X.Y.Z 
 ```
 
-Where X.Y.Z represents your installed cURL version.
+여기서 X.Y.Z는 설치된 cURL 버전을 의미합니다.
 
-To confirm this, send a test request to the /user-agent endpoint provided by [httpbin.io](https://httpbin.io/), which returns the User-Agent header sent by the requester:
+이를 확인하려면, 요청자가 전송한 User-Agent 헤더를 반환하는 [httpbin.io](https://httpbin.io/)의 /user-agent エンドポイント로 테스트 リクエスト를 보내면 됩니다:
 
 ```sh
 curl "https://httpbin.io/user-agent"
 ```
 
 > **Note**:
-> Windows users should use curl.exe instead of curl. This distinction exists because curl serves as an alias for [Invoke-WebRequest](https://brightdata.com/blog/how-tos/powershell-invoke-webrequest-with-proxy) in PowerShell, while curl.exe directs to the actual cURL Windows executable.
+> Windows 사용자는 curl 대신 curl.exe를 사용해야 합니다. 이는 PowerShell에서 curl이 [Invoke-WebRequest](https://brightdata.co.kr/blog/how-tos/powershell-invoke-webrequest-with-proxy)의 별칭(alias)으로 동작하는 반면, curl.exe는 실제 cURL Windows 실행 파일을 가리키기 때문입니다.
 
-The response should appear similar to:
+レスポンス는 다음과 유사하게 표시됩니다:
 
 ```json
 {
@@ -53,31 +53,31 @@ The response should appear similar to:
 }
 ```
 
-As demonstrated, cURL sets its version (curl/8.4.0) as the user agent. This presents a problem because it explicitly identifies your request as originating from cURL. Website protection mechanisms designed to safeguard content can easily flag such requests as non-human, potentially blocking them.
+보시다시피 cURL은 자신의 버전(curl/8.4.0)을 user agent로 설정합니다. 이는 リクエスト가 cURL에서 비롯되었음을 명확히 식별하기 때문에 문제가 됩니다. 콘텐츠를 보호하도록 설계된 웹사이트 보호 메커니즘은 이러한 リクエスト를 비인간(non-human)으로 쉽게 플래그 처리하여 차단할 수 있습니다.
 
-That's why it's important to customize the cURL user agent header.
+따라서 cURL user agent 헤더를 커스터마이징하는 것이 중요합니다.
 
 ## How to Configure the cURL User Agent Header
 
-You can employ two different approaches to modify a user agent in cURL.
+cURL에서 user agent를 수정하는 방법은 두 가지 접근 방식이 있습니다.
 
 ### Directly Setting a Custom User Agent
 
-cURL provides a dedicated option for this purpose. Specifically, the [\-A or –user-agent](https://curl.se/docs/manpage.html#-A) flag allows you to define the content of the User-Agent header in cURL requests.
+cURL은 이를 위한 전용 옵션을 제공합니다. 구체적으로, [\-A or –user-agent](https://curl.se/docs/manpage.html#-A) 플래그를 사용하면 cURL リクエスト에서 User-Agent 헤더의 내용을 정의할 수 있습니다.
 
-The syntax for establishing a cURL user agent header using this option is:
+이 옵션으로 cURL user agent 헤더를 설정하는 문법은 다음과 같습니다:
 
 ```sh
 curl -A|--user-agent "<user-agent_string>" "<url>"
 ```
 
-Here is an example:
+예시는 다음과 같습니다:
 
 ```sh
 curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36" "https://httpbin.io/user-agent"
 ```
 
-For the command above, you'll receive this output:
+위 명령에 대한 출력은 다음과 같습니다:
 
 ```json
 {
@@ -85,19 +85,19 @@ For the command above, you'll receive this output:
 }
 ```
 
-The command above is equivalent to using the longer form:
+위 명령은 다음의 긴 형태와 동일합니다:
 
 ```sh
 curl --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36" "https://httpbin.io/user-agent"
 ```
 
-Though not generally advised, you can completely remove the User-Agent header by passing an empty string to `-A`. Verify this by accessing the [/headers](https://httpbin.io/headers) endpoint from httpbin.io, which displays all headers in the incoming request:
+일반적으로 권장되지는 않지만, `-A`에 빈 문자열을 전달하여 User-Agent 헤더를 완전히 제거할 수도 있습니다. 이를 확인하려면, 수신 リクエ스트의 모든 헤더를 표시하는 httpbin.io의 [/headers](https://httpbin.io/headers) エンドポイント에 접근하면 됩니다:
 
 ```sh
 curl -A "" "https://httpbin.io/headers"
 ```
 
-The result will show:
+결과는 다음과 같이 표시됩니다:
 
 ```json
 {
@@ -112,15 +112,15 @@ The result will show:
 }
 ```
 
-As anticipated, no User-Agent header appears.
+예상대로 User-Agent 헤더가 나타나지 않습니다.
 
-If you prefer to maintain the User-Agent header but with an empty value, provide a single space to `-A`:
+User-Agent 헤더는 유지하되 값만 비워두고 싶다면, `-A`에 공백 한 칸을 제공하면 됩니다:
 
 ```sh
 curl -A " " "https://httpbin.io/headers"
 ```
 
-This time, you'll receive:
+이번에는 다음을 받게 됩니다:
 
 ```json
 {
@@ -138,28 +138,28 @@ This time, you'll receive:
 }
 ```
 
-In that case, the User-Agent header exists but contains an empty value.
+이 경우 User-Agent 헤더는 존재하지만, 값은 비어 있습니다.
 
 ### Configuring a Custom User Agent Header
 
-Fundamentally, User-Agent functions as a standard HTTP header. This means you can configure it like any other HTTP header in cURL using the [\-H or –header](https://curl.se/docs/manpage.html#-H) [option](https://curl.se/docs/manpage.html#-H):
+근본적으로 User-Agent는 표준 HTTP 헤더로 동작합니다. 즉, [\-H or –header](https://curl.se/docs/manpage.html#-H) [option](https://curl.se/docs/manpage.html#-H)을 사용하여 cURL에서 다른 HTTP 헤더와 동일하게 구성할 수 있습니다:
 
 ```sh
 curl -H|--header "User-Agent: <user-agent_string>" "<url>"
 ```
 
-For a more detailed explanation, check our tutorial on [how to send HTTP headers with cURL](https://brightdata.com/blog/how-tos/http-headers-with-curl).
+더 자세한 설명은 [how to send HTTP headers with cURL](https://brightdata.co.kr/blog/how-tos/http-headers-with-curl) 튜토리얼을 확인해 보시기 바랍니다.
 
-Here's a demonstration of the `-H` option:
+다음은 `-H` 옵션의 데모입니다:
 
 ```sh
 curl -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36" "https://httpbin.io/user-agent"
 ```
 
 > **Note**:
-> Since [HTTP headers are designed to be case-insensitive](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers), "User-Agent" and "user-agent" are treated identically.
+> [HTTP headers are designed to be case-insensitive](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers) 하므로, "User-Agent"와 "user-agent"는 동일하게 취급됩니다.
 
-The output will be:
+출력은 다음과 같습니다:
 
 ```json
 {
@@ -167,34 +167,34 @@ The output will be:
 }
 ```
 
-This cURL command works identically to:
+이 cURL 명령은 다음과 동일하게 동작합니다:
 
 ```sh
 curl --header "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36" "https://httpbin.io/user-agent"
 ```
 
-For specialized scenarios, consider these two alternative header formats:
+특수한 시나리오를 위해, 다음 두 가지 대체 헤더 형식도 고려할 수 있습니다:
 
-- `"User-Agent:"` to eliminate the User-Agent header entirely
-- `"User-Agent: "` to include the User-Agent header with an empty value
+- `"User-Agent:"`는 User-Agent 헤더를 완전히 제거합니다
+- `"User-Agent: "`는 User-Agent 헤더를 포함하되 값은 비워 둡니다
 
 ## Creating a User Agent Rotation System in cURL
 
-When performing automated requests at scale with cURL, using a single User-Agent value may prove insufficient. This is because [anti-bot systems](https://brightdata.com/webinar/bot-detection) track all incoming connections. When they detect numerous requests with identical headers from the same IP address, they're likely to implement restrictions.
+cURL로 대규모 자동 リクエスト를 수행할 때는 단일 User-Agent 값을 사용하는 것만으로는 충분하지 않을 수 있습니다. 이는 [anti-bot systems](https://brightdata.co.kr/webinar/bot-detection)이 모든 유입 연결을 추적하기 때문입니다. 동일한 IPアドレス에서 동일한 헤더를 가진 수많은 リクエスト가 감지되면, 제한을 적용할 가능성이 큽니다.
 
-The trick is to randomize what IPs the requests are coming from. Rotating user agents helps create the appearance of requests coming from various browsers, reducing the risk of triggering temporary restrictions or blocks.
+핵심은 リクエスト의 출처 IP를 무작위화하는 것입니다. user agent를 로테이션하면 다양한 브라우저에서 온 リクエスト처럼 보이게 하여, 일시적 제한이나 차단이 트리거될 위험을 줄일 수 있습니다.
 
-there are three steps to implement cURL user agent rotation:
+cURL user agent 로테이션을 구현하는 데에는 세 단계가 있습니다:
 
-1. **Gather user agents**: Compile a collection of authentic user agent strings from diverse browsers, spanning different versions and devices.
-2. **Create rotation logic**: Develop code that randomly selects a user agent from your collection.
-3. **Randomize your requests**: Apply the selected user agent to each cURL request.
+1. **Gather user agents**: 다양한 브라우저(서로 다른 버전 및 디바이스 포함)에서 수집한 실제 user agent 문자열 컬렉션을 구성합니다.
+2. **Create rotation logic**: 컬렉션에서 user agent를 무작위로 선택하는 코드를 개발합니다.
+3. **Randomize your requests**: 선택된 user agent를 각 cURL リクエスト에 적용합니다.
 
-This implementation requires slight code variations between Unix-based systems and Windows. Let's explore both approaches!
+이 구현은 Unix 기반 시스템과 Windows 간에 약간의 코드 차이가 필요합니다. 두 가지 접근 방식을 모두 살펴보겠습니다!
 
 ### Implementation in Bash
 
-First, collect legitimate user agents from resources like [User Agent String.com](https://useragentstring.com/pages/useragentstring.php) and store them in an array:
+먼저 [User Agent String.com](https://useragentstring.com/pages/useragentstring.php) 같은 리소스에서 정상적인 user agent를 수집하고 배열에 저장합니다:
 
 ```
 user_agents=( 
@@ -204,7 +204,7 @@ user_agents=(
 ) 
 ```
 
-Next, create a function that randomly selects from this list using the [RANDOM](https://tldp.org/LDP/abs/html/randomvar.html) variable:
+다음으로 [RANDOM](https://tldp.org/LDP/abs/html/randomvar.html) 변수를 사용하여 이 목록에서 무작위로 선택하는 함수를 만듭니다:
 
 ```sh
 get_random_user_agent() { 
@@ -214,7 +214,7 @@ get_random_user_agent() {
 } 
 ```
 
-Now invoke the function, retrieve a randomized user agent, and incorporate it into your cURL request:
+이제 함수를 호출하여 무작위 user agent를 가져오고, 이를 cURL リクエスト에 포함합니다:
 
 ```sh
 user_agent=$(get_random_user_agent) 
@@ -223,9 +223,9 @@ curl -A "$user_agent" "https://httpbin.io/user-agent"
 ```
 
 > **Note**:
-> Adjust the target URL to match your specific requirements.
+> 대상 URL은 특정 요구사항에 맞게 조정하시기 바랍니다.
 
-Combining these elements creates this complete bash script:
+이 요소들을 결합하면 다음과 같은 완전한 bash 스크립트가 됩니다:
 
 ```sh
 #!/bin/bash 
@@ -247,7 +247,7 @@ user_agent=$(get_random_user_agent)
 curl -A "$user_agent" "https://httpbin.io/user-agent"
 ```
 
-Run this script multiple times, and you'll notice a different user agent appears each time—mission accomplished!
+이 스크립트를 여러 번 실행하면 매번 다른 user agent가 나타나는 것을 확인할 수 있습니다—목표 달성입니다!
 
 Output:
 
@@ -268,7 +268,7 @@ arturk@maint-xubuntu20:~/Support/Sandbox/curl-user-agent$ ./random_ua.sh
 
 ### Implementation in PowerShell
 
-Begin by gathering authentic user agents from sources like [WhatIsMyBrowser.com](https://www.whatismybrowser.com/). Then store them in an [array variable](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_arrays?view=powershell-7.4):
+먼저 [WhatIsMyBrowser.com](https://www.whatismybrowser.com/) 같은 소스에서 실제 user agent를 수집합니다. 그런 다음 이를 [array variable](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_arrays?view=powershell-7.4)에 저장합니다:
 
 ```sh
 $user_agents = @(
@@ -284,7 +284,7 @@ $user_agents = @(
 )
 ```
 
-Next, develop a function that randomly selects a user agent from your collection:
+다음으로 컬렉션에서 user agent를 무작위로 선택하는 함수를 개발합니다:
 
 ```sh
 function Get-RandomUserAgent {
@@ -304,7 +304,7 @@ function Get-RandomUserAgent {
 }
 ```
 
-Finally, call this function, obtain the random user agent, and apply it to your cURL request:
+마지막으로 이 함수를 호출하여 무작위 user agent를 얻고, 이를 cURL リクエ스트에 적용합니다:
 
 ```sh
 # get the random user agent
@@ -318,7 +318,7 @@ $user_agent = Get-RandomUserAgent
 curl.exe -A "$user_agent" "https://httpbin.io/user-agent"
 ```
 
-Bringing everything together produces this complete PowerShell script:
+모든 내용을 합치면 다음과 같은 완전한 PowerShell 스크립트가 됩니다:
 
 ```sh
 # list of user agents 
@@ -360,7 +360,7 @@ $user_agent = Get-RandomUserAgent
 curl.exe -A "$user_agent" "https://httpbin.io/user-agent"
 ```
 
-Save this as a .ps1 file and execute it several times. Each execution will display a different user agent string.
+이를 .ps1 파일로 저장하고 여러 번 실행하십시오. 실행할 때마다 서로 다른 user agent 문자열이 표시됩니다.
 
 Output:
 
@@ -381,8 +381,8 @@ PS C:\Users\user\Desktop\marketing\curl-user-agent> .\1.ps1
 
 ## Final Thoughts
 
-Customizing the User-Agent header in cURL can help deceive basic anti-bot systems by making your requests appear to come from standard browsers. However, sophisticated anti-bot technologies can still identify and block such requests.
+cURL에서 User-Agent 헤더를 커스터마이징하면, リクエスト가 일반 브라우저에서 온 것처럼 보이게 하여 기본적인 アンチボット 시스템을 속이는 데 도움이 될 수 있습니다. 그러나 고도화된 アンチボット 기술은 여전히 이러한 リクエスト를 식별하고 차단할 수 있습니다.
 
-To overcome limitations like rate restrictions, consider [integrating proxies with cURL](https://brightdata.com/blog/proxy-101/curl-with-proxies). For even more robust solutions, explore [Scraper API](https://brightdata.com/products/web-scraper)—a comprehensive, next-generation scraping API designed for automated web requests using cURL or other HTTP clients.
+レート制限 같은 제한을 극복하려면 [integrating proxies with cURL](https://brightdata.co.kr/blog/proxy-101/curl-with-proxies)을 고려해 보시기 바랍니다. 더욱 강력한 솔루션이 필요하다면, cURL 또는 기타 HTTP 클라이언트를 사용한 자동 웹 リクエ스트를 위해 설계된 종합적인 차세대 スクレイピング API인 [Scraper API](https://brightdata.co.kr/products/web-scraper)를 살펴보시기 바랍니다.
 
-Sign up today for a free trial and experience the difference!
+오늘 무료 체험에 등록하고 차이를 경험해 보십시오!

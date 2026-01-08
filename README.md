@@ -1,6 +1,6 @@
 # cURL에서 User Agent 설정 및 변경 방법
 
-[![Bright Data Promo](https://github.com/luminati-io/LinkedIn-Scraper/raw/main/Proxies%20and%20scrapers%20GitHub%20bonus%20banner.png)](https://brightdata.co.kr/)
+[![Bright Data Promo](https://github.com/bright-kr/LinkedIn-Scraper/raw/main/Proxies%20and%20scrapers%20GitHub%20bonus%20banner.png)](https://brightdata.co.kr/)
 
 이 가이드는 Webスクレイピング 작업을 개선하기 위해 cURL에서 User-Agent 헤더를 구성하고 수정하는 과정을 안내합니다:
 

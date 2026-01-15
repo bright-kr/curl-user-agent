@@ -2,7 +2,7 @@
 
 [![Bright Data Promo](https://github.com/bright-kr/LinkedIn-Scraper/raw/main/Proxies%20and%20scrapers%20GitHub%20bonus%20banner.png)](https://brightdata.co.kr/)
 
-이 가이드는 Webスクレイピング 작업을 개선하기 위해 cURL에서 User-Agent 헤더를 구성하고 수정하는 과정을 안내합니다:
+이 가이드는 Web스크레이핑 작업을 개선하기 위해 cURL에서 User-Agent 헤더를 구성하고 수정하는 과정을 안내합니다:
 
 - [User Agents and Their Significance](#user-agents-and-their-significance)
 - [The Standard cURL User Agent](#the-standard-curl-user-agent)
@@ -16,7 +16,7 @@
 
 ## User Agents and Their Significance
 
-User agent는 웹 브라우저, リクエスト를 생성하는 애플리케이션, HTTP 클라이언트가 リクエスト의 소스 소프트웨어를 공개하기 위해 [User-Agent](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent) HTTP 헤더에 포함하는 텍스트 문자열을 의미합니다. 이 식별자에는 일반적으로 브라우저/애플리케이션 유형, 운영체제, 그리고 추가 사양에 대한 정보가 포함됩니다.
+User agent는 웹 브라우저, 요청를 생성하는 애플리케이션, HTTP 클라이언트가 요청의 소스 소프트웨어를 공개하기 위해 [User-Agent](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent) HTTP 헤더에 포함하는 텍스트 문자열을 의미합니다. 이 식별자에는 일반적으로 브라우저/애플리케이션 유형, 운영체제, 그리고 추가 사양에 대한 정보가 포함됩니다.
 
 다음은 Chrome 브라우저의 일반적인 user agent 문자열 예시입니다:
 
@@ -24,11 +24,11 @@ User agent는 웹 브라우저, リクエスト를 생성하는 애플리케이�
 Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
 ```
 
-이 헤더 정보는 リクエスト가 정상적인 브라우저에서 발생했는지, 혹은 다른 소프트웨어 도구에서 발생했는지를 판단하는 데 중요한 역할을 합니다. 자동화된 スクレイピング 도구는 종종 일관성이 없거나 범용적인 user agent 문자열을 사용하여 자동화된 성격을 드러냅니다. 따라서 user agent 헤더는 アンチボット 기술이 실제 사용자와 자동화 스크립트를 구분하는 데 도움을 줍니다.
+이 헤더 정보는 요청가 정상적인 브라우저에서 발생했는지, 혹은 다른 소프트웨어 도구에서 발생했는지를 판단하는 데 중요한 역할을 합니다. 자동화된 스크레이핑 도구는 종종 일관성이 없거나 범용적인 user agent 문자열을 사용하여 자동화된 성격을 드러냅니다. 따라서 user agent 헤더는 안티봇 기술이 실제 사용자와 자동화 스크립트를 구분하는 데 도움을 줍니다.
 
 ## The Standard cURL User Agent
 
-대부분의 HTTP 클라이언트와 마찬가지로 [cURL](https://brightdata.co.kr/blog/web-data/what-is-curl)은 HTTP リクエスト를 전송할 때 User-Agent 헤더를 자동으로 포함합니다. 기본 cURL user agent는 다음 형식을 따릅니다:
+대부분의 HTTP 클라이언트와 마찬가지로 [cURL](https://brightdata.co.kr/blog/web-data/what-is-curl)은 HTTP 요청를 전송할 때 User-Agent 헤더를 자동으로 포함합니다. 기본 cURL user agent는 다음 형식을 따릅니다:
 
 ```
 curl/X.Y.Z 
@@ -36,7 +36,7 @@ curl/X.Y.Z
 
 여기서 X.Y.Z는 설치된 cURL 버전을 의미합니다.
 
-이를 확인하려면, 요청자가 전송한 User-Agent 헤더를 반환하는 [httpbin.io](https://httpbin.io/)의 /user-agent エンドポイント로 테스트 リクエスト를 보내면 됩니다:
+이를 확인하려면, 요청자가 전송한 User-Agent 헤더를 반환하는 [httpbin.io](https://httpbin.io/)의 /user-agent 엔드포인트로 테스트 요청를 보내면 됩니다:
 
 ```sh
 curl "https://httpbin.io/user-agent"
@@ -45,7 +45,7 @@ curl "https://httpbin.io/user-agent"
 > **Note**:
 > Windows 사용자는 curl 대신 curl.exe를 사용해야 합니다. 이는 PowerShell에서 curl이 [Invoke-WebRequest](https://brightdata.co.kr/blog/how-tos/powershell-invoke-webrequest-with-proxy)의 별칭(alias)으로 동작하는 반면, curl.exe는 실제 cURL Windows 실행 파일을 가리키기 때문입니다.
 
-レスポンス는 다음과 유사하게 표시됩니다:
+응답는 다음과 유사하게 표시됩니다:
 
 ```json
 {
@@ -53,7 +53,7 @@ curl "https://httpbin.io/user-agent"
 }
 ```
 
-보시다시피 cURL은 자신의 버전(curl/8.4.0)을 user agent로 설정합니다. 이는 リクエスト가 cURL에서 비롯되었음을 명확히 식별하기 때문에 문제가 됩니다. 콘텐츠를 보호하도록 설계된 웹사이트 보호 메커니즘은 이러한 リクエスト를 비인간(non-human)으로 쉽게 플래그 처리하여 차단할 수 있습니다.
+보시다시피 cURL은 자신의 버전(curl/8.4.0)을 user agent로 설정합니다. 이는 요청가 cURL에서 비롯되었음을 명확히 식별하기 때문에 문제가 됩니다. 콘텐츠를 보호하도록 설계된 웹사이트 보호 메커니즘은 이러한 요청를 비인간(non-human)으로 쉽게 플래그 처리하여 차단할 수 있습니다.
 
 따라서 cURL user agent 헤더를 커스터마이징하는 것이 중요합니다.
 
@@ -63,7 +63,7 @@ cURL에서 user agent를 수정하는 방법은 두 가지 접근 방식이 있�
 
 ### Directly Setting a Custom User Agent
 
-cURL은 이를 위한 전용 옵션을 제공합니다. 구체적으로, [\-A or –user-agent](https://curl.se/docs/manpage.html#-A) 플래그를 사용하면 cURL リクエスト에서 User-Agent 헤더의 내용을 정의할 수 있습니다.
+cURL은 이를 위한 전용 옵션을 제공합니다. 구체적으로, [\-A or –user-agent](https://curl.se/docs/manpage.html#-A) 플래그를 사용하면 cURL 요청에서 User-Agent 헤더의 내용을 정의할 수 있습니다.
 
 이 옵션으로 cURL user agent 헤더를 설정하는 문법은 다음과 같습니다:
 
@@ -91,7 +91,7 @@ curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, li
 curl --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36" "https://httpbin.io/user-agent"
 ```
 
-일반적으로 권장되지는 않지만, `-A`에 빈 문자열을 전달하여 User-Agent 헤더를 완전히 제거할 수도 있습니다. 이를 확인하려면, 수신 リクエ스트의 모든 헤더를 표시하는 httpbin.io의 [/headers](https://httpbin.io/headers) エンドポイント에 접근하면 됩니다:
+일반적으로 권장되지는 않지만, `-A`에 빈 문자열을 전달하여 User-Agent 헤더를 완전히 제거할 수도 있습니다. 이를 확인하려면, 수신 リクエ스트의 모든 헤더를 표시하는 httpbin.io의 [/headers](https://httpbin.io/headers) 엔드포인트에 접근하면 됩니다:
 
 ```sh
 curl -A "" "https://httpbin.io/headers"
@@ -180,15 +180,15 @@ curl --header "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit
 
 ## Creating a User Agent Rotation System in cURL
 
-cURL로 대규모 자동 リクエスト를 수행할 때는 단일 User-Agent 값을 사용하는 것만으로는 충분하지 않을 수 있습니다. 이는 [anti-bot systems](https://brightdata.co.kr/webinar/bot-detection)이 모든 유입 연결을 추적하기 때문입니다. 동일한 IPアドレス에서 동일한 헤더를 가진 수많은 リクエスト가 감지되면, 제한을 적용할 가능성이 큽니다.
+cURL로 대규모 자동 요청를 수행할 때는 단일 User-Agent 값을 사용하는 것만으로는 충분하지 않을 수 있습니다. 이는 [anti-bot systems](https://brightdata.co.kr/webinar/bot-detection)이 모든 유입 연결을 추적하기 때문입니다. 동일한 IP 주소에서 동일한 헤더를 가진 수많은 요청가 감지되면, 제한을 적용할 가능성이 큽니다.
 
-핵심은 リクエスト의 출처 IP를 무작위화하는 것입니다. user agent를 로테이션하면 다양한 브라우저에서 온 リクエスト처럼 보이게 하여, 일시적 제한이나 차단이 트리거될 위험을 줄일 수 있습니다.
+핵심은 요청의 출처 IP를 무작위화하는 것입니다. user agent를 로테이션하면 다양한 브라우저에서 온 요청처럼 보이게 하여, 일시적 제한이나 차단이 트리거될 위험을 줄일 수 있습니다.
 
 cURL user agent 로테이션을 구현하는 데에는 세 단계가 있습니다:
 
 1. **Gather user agents**: 다양한 브라우저(서로 다른 버전 및 디바이스 포함)에서 수집한 실제 user agent 문자열 컬렉션을 구성합니다.
 2. **Create rotation logic**: 컬렉션에서 user agent를 무작위로 선택하는 코드를 개발합니다.
-3. **Randomize your requests**: 선택된 user agent를 각 cURL リクエスト에 적용합니다.
+3. **Randomize your requests**: 선택된 user agent를 각 cURL 요청에 적용합니다.
 
 이 구현은 Unix 기반 시스템과 Windows 간에 약간의 코드 차이가 필요합니다. 두 가지 접근 방식을 모두 살펴보겠습니다!
 
@@ -214,7 +214,7 @@ get_random_user_agent() {
 } 
 ```
 
-이제 함수를 호출하여 무작위 user agent를 가져오고, 이를 cURL リクエスト에 포함합니다:
+이제 함수를 호출하여 무작위 user agent를 가져오고, 이를 cURL 요청에 포함합니다:
 
 ```sh
 user_agent=$(get_random_user_agent) 
@@ -381,8 +381,8 @@ PS C:\Users\user\Desktop\marketing\curl-user-agent> .\1.ps1
 
 ## Final Thoughts
 
-cURL에서 User-Agent 헤더를 커스터마이징하면, リクエスト가 일반 브라우저에서 온 것처럼 보이게 하여 기본적인 アンチボット 시스템을 속이는 데 도움이 될 수 있습니다. 그러나 고도화된 アンチボット 기술은 여전히 이러한 リクエスト를 식별하고 차단할 수 있습니다.
+cURL에서 User-Agent 헤더를 커스터마이징하면, 요청가 일반 브라우저에서 온 것처럼 보이게 하여 기본적인 안티봇 시스템을 속이는 데 도움이 될 수 있습니다. 그러나 고도화된 안티봇 기술은 여전히 이러한 요청를 식별하고 차단할 수 있습니다.
 
-レート制限 같은 제한을 극복하려면 [integrating proxies with cURL](https://brightdata.co.kr/blog/proxy-101/curl-with-proxies)을 고려해 보시기 바랍니다. 더욱 강력한 솔루션이 필요하다면, cURL 또는 기타 HTTP 클라이언트를 사용한 자동 웹 リクエ스트를 위해 설계된 종합적인 차세대 スクレイピング API인 [Scraper API](https://brightdata.co.kr/products/web-scraper)를 살펴보시기 바랍니다.
+속도 제한 같은 제한을 극복하려면 [integrating proxies with cURL](https://brightdata.co.kr/blog/proxy-101/curl-with-proxies)을 고려해 보시기 바랍니다. 더욱 강력한 솔루션이 필요하다면, cURL 또는 기타 HTTP 클라이언트를 사용한 자동 웹 リクエ스트를 위해 설계된 종합적인 차세대 스크레이핑 API인 [Scraper API](https://brightdata.co.kr/products/web-scraper)를 살펴보시기 바랍니다.
 
 오늘 무료 체험에 등록하고 차이를 경험해 보십시오!
